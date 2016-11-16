@@ -27,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.splash);
         super.onCreate(arg0);
 //        getActionBar().hide();
-        intologin=new Intent(this,MainActivity.class);
+        intologin=new Intent(this,LoginActivity.class);
         rootLayout = (RelativeLayout) findViewById(R.id.splash_root);
         versionText = (TextView) findViewById(R.id.tv_version);
         bgiv=(ImageView)findViewById(R.id.bgcolor);
