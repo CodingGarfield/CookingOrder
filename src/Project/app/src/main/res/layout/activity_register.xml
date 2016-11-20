@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:aigestudio="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -29,7 +30,7 @@
 
 
             <ProgressBar
-                android:id="@+id/login_progress"
+                android:id="@+id/r_login_progress"
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,48 +38,78 @@
                 android:visibility="gone" />
 
             <ScrollView
-                android:id="@+id/login_form"
+                android:id="@+id/r_login_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/email_login_form"
+                    android:id="@+id/r_login_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <android.support.design.widget.TextInputLayout
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:weightSum="1"
+                        android:layout_height="120dp">
 
-                        <AutoCompleteTextView
-                            android:id="@+id/email"
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:orientation="vertical"
                             android:layout_height="wrap_content"
-                            android:hint="@string/prompt_email"
-                            android:inputType="textEmailAddress"
-                            android:maxLines="1"
-                            android:singleLine="true" />
+                            android:layout_weight="1.01"
+                            android:layout_width="30dp">
 
-                    </android.support.design.widget.TextInputLayout>
+                            <android.support.design.widget.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                                <AutoCompleteTextView
+                                    android:id="@+id/r_email"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/prompt_email"
+                                    android:inputType="textEmailAddress"
+                                    android:maxLines="1"
+                                    android:singleLine="true"/>
 
-                        <EditText
-                            android:id="@+id/password"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/prompt_password"
-                            android:imeActionId="@+id/login"
-                            android:imeActionLabel="@string/action_sign_in_short"
-                            android:imeOptions="actionUnspecified"
-                            android:inputType="textPassword"
-                            android:maxLines="1"
-                            android:singleLine="true" />
+                            </android.support.design.widget.TextInputLayout>
 
-                    </android.support.design.widget.TextInputLayout>
+                            <android.support.design.widget.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <EditText
+                                    android:id="@+id/r_password"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/prompt_password"
+                                    android:imeActionId="@+id/login"
+                                    android:imeActionLabel="@string/action_sign_in_short"
+                                    android:imeOptions="actionUnspecified"
+                                    android:inputType="textPassword"
+                                    android:maxLines="1"
+                                    android:singleLine="true"  />
+
+                            </android.support.design.widget.TextInputLayout>
+                        </LinearLayout>
+
+                        <com.aigestudio.wheelpicker.WheelPicker
+                            android:id="@+id/r_wheel_center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="125dp"
+                            aigestudio:wheel_atmospheric="true"
+                            aigestudio:wheel_curved="true"
+                            aigestudio:wheel_cyclic="false"
+                            aigestudio:wheel_item_text_color="#303030"
+                            aigestudio:wheel_item_text_size="18sp"
+                            aigestudio:wheel_item_space="40dp"
+                            aigestudio:wheel_selected_item_text_color="@color/colorAccent"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -86,7 +117,7 @@
                         android:layout_height="match_parent">
 
                         <Button
-                            android:id="@+id/register_button"
+                            android:id="@+id/r_register_button"
                             style="@style/Widget.AppCompat.Button.Colored"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

@@ -3,21 +3,19 @@ package com.codinggarfield.cooking.cooking;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +27,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.aigestudio.wheelpicker.WheelPicker;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +37,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 /**
  * A login screen that offers login via email/password.
  */
-public class RegisterActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class RegisterActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,WheelPicker.OnItemSelectedListener {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -67,10 +67,10 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.r_email);
         populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordView = (EditText) findViewById(R.id.r_password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -82,7 +82,17 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
+        //选择器
+        WheelPicker wheelCenter = (WheelPicker) findViewById(R.id.r_wheel_center);
+        wheelCenter.setOnItemSelectedListener(this);
+        List<String> data = new ArrayList<>();
+        data.add("用户");
+        data.add("商家");
+        data.add("管理员(公司)");
+        wheelCenter.setData(data);
+
+
+        Button mEmailSignInButton = (Button) findViewById(R.id.r_register_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,8 +100,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mLoginFormView = findViewById(R.id.r_login_form);
+        mProgressView = findViewById(R.id.r_login_progress);
     }
 
     private void populateAutoComplete() {
@@ -124,6 +134,33 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         return false;
     }
 
+
+    //选择器
+    @Override
+    public void onItemSelected(WheelPicker picker, Object data, int position) {
+        String text = "";
+//        switch (picker.getId()) {
+//            case R.id.main_wheel_center:
+//                text = "Center:";
+//                break;
+//        }
+        switch (position)
+        {
+            case 1://用户
+
+                break;
+            case 2://商人
+
+                break;
+            case 3://管理员（公司）
+
+                break;
+            default:
+                break;
+        }
+        Snackbar.make(mProgressView, "切换至"+String.valueOf(data), Snackbar.LENGTH_SHORT)
+                .setAction("Action", null).show();
+    }
     /**
      * Callback received when a permissions request has been completed.
      */

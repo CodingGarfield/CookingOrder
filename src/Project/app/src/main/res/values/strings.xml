@@ -24,7 +24,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_register">Sign in</string>
+    <string name="title_activity_register">Register</string>
     <string name="title_activity_order">OrderActivity</string>
     <string name="section_format">%1$d</string>
 </resources>

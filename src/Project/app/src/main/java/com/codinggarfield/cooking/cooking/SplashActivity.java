@@ -8,7 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,14 +32,14 @@ public class SplashActivity extends AppCompatActivity {
         bgiv=(ImageView)findViewById(R.id.bgcolor);
         int colorA = Color.parseColor("#ffffff"),colorB = Color.parseColor("#3F51B5");
         ObjectAnimator objectAnimator = ObjectAnimator.ofInt(bgiv,"backgroundColor",colorA,colorB);
-        objectAnimator.setDuration(3000);
+        objectAnimator.setDuration(1000);
         objectAnimator.setEvaluator(new ArgbEvaluator());
         objectAnimator.start();
 
         versionText.setText(getVersion());
-        AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
-        animation.setDuration(1000);
-        rootLayout.startAnimation(animation);
+//        AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
+//        animation.setDuration(1000);
+//        rootLayout.startAnimation(animation);
     }
 
     Intent intologin;
