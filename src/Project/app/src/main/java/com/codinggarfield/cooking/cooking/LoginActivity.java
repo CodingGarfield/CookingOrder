@@ -29,9 +29,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.aigestudio.wheelpicker.WheelPicker;
+import com.codinggarfield.cooking.cooking.JavaBean.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -45,6 +50,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
+
+    BmobQuery<User> query;
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -62,6 +69,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    //默认用户为普通用户
+    private String usertype="user";
+    User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +80,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+
+        query = new BmobQuery<>();
+
+        //User表
+        user=new User();
 
         //选择器
         WheelPicker wheelCenter = (WheelPicker) findViewById(R.id.main_wheel_center);
@@ -168,12 +183,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         {
             case 1://用户
 
+                usertype="user";
                 break;
             case 2://商人
 
+                usertype="business";
                 break;
             case 3://管理员（公司）
 
+                usertype="admin";
                 break;
             default:
                 break;
@@ -346,6 +364,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mUsername;
         private final String mPassword;
+        private String tPassword="";
 
         UserLoginTask(String email, String password) {
             mUsername = email;
@@ -380,9 +399,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
+            query.setLimit(1).addWhereEqualTo("username",mUsername)
+                    .findObjects(new FindListener<User>() {
+                        @Override
+                        public void done(List<User> object, BmobException e) {
+                            if (e == null) {
+                                System.out.print(""+tPassword);
+                                // 找得到
+                                for (User user : object) {
+                                    tPassword=user.getPassword();
+                                }
+                                System.out.print("数据库"+tPassword);
+                            } else {
+                                // 找不到
+                                System.out.print("找不到"+tPassword);
+                                mUsernameView.setError(getString(R.string.error_invalid_username));
+                                mUsernameView.requestFocus();
+                            }
+                        }
+                    });
             if (success) {
-                startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                finish();
+                if(tPassword.equals(mPassword)) {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                }
+                else
+                {
+                    System.out.print("正确密码是"+tPassword);
+                }
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
