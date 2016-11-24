@@ -365,6 +365,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mUsername;
         private final String mPassword;
         private String tPassword="";
+        private String tusertype="";
 
         UserLoginTask(String email, String password) {
             mUsername = email;
@@ -377,7 +378,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             try {
                 // Simulate network access.
-                Thread.sleep(2000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 return false;
             }
@@ -399,38 +400,52 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
+            ///云端数据库查询
             query.setLimit(1).addWhereEqualTo("username",mUsername)
                     .findObjects(new FindListener<User>() {
                         @Override
                         public void done(List<User> object, BmobException e) {
                             if (e == null) {
-                                System.out.print(""+tPassword);
+                                System.out.println(""+tPassword);
                                 // 找得到
                                 for (User user : object) {
                                     tPassword=user.getPassword();
+                                    tusertype=user.getUsertype();
                                 }
-                                System.out.print("数据库"+tPassword);
+//                                System.out.println("数据库："+tPassword+"///输入："+mPassword);
+                                if (success) {
+
+                                    if(tPassword.equals(mPassword)) {
+                                        if(tusertype.equals("user")) {
+                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                            finish();
+                                        }
+                                        else if(tusertype.equals("business"))
+                                        {
+
+                                        }
+                                        else if(tusertype.equals("admin"))
+                                        {
+                                            startActivity(new Intent(LoginActivity.this, ChartsActivity.class));
+                                            finish();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        System.out.println("//正确密码是"+tPassword);
+                                    }
+                                } else {
+                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                    mPasswordView.requestFocus();
+                                }
                             } else {
                                 // 找不到
-                                System.out.print("找不到"+tPassword);
+                                System.out.println("找不到"+tPassword);
                                 mUsernameView.setError(getString(R.string.error_invalid_username));
                                 mUsernameView.requestFocus();
                             }
                         }
                     });
-            if (success) {
-                if(tPassword.equals(mPassword)) {
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    finish();
-                }
-                else
-                {
-                    System.out.print("正确密码是"+tPassword);
-                }
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
         }
 
         @Override
