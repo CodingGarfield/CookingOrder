@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -25,32 +26,37 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aigestudio.wheelpicker.WheelPicker;
 import com.codinggarfield.cooking.cooking.JavaBean.MyUser;
+import com.codinggarfield.cooking.cooking.JavaBean.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class RegisterActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,WheelPicker.OnItemSelectedListener {
+public class EditInfoActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    //默认用户为普通用户
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor Ed;
     private String usertype="user";
-//    User user;
+    User user;
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -65,26 +71,42 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mUsernameView;
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
+    private AutoCompleteTextView mUsernameView,mEmailView,mPhoneView;
+    private EditText mPasswordView,mAgeView;
+    private ImageView head;
     private View mProgressView;
     private View mLoginFormView;
     Snackbar successbar,failbar;
 
+    BmobQuery<User> query;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_edit_info);
         // Set up the login form.
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.r_username);
+        mUsernameView = (AutoCompleteTextView) findViewById(R.id.edit_username);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.edit_email);
+        mPhoneView = (AutoCompleteTextView) findViewById(R.id.edit_phone);
         populateAutoComplete();
 
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.r_email);
+        head = (ImageView)findViewById(R.id.edit_head) ;
 
-//        user=new User();
+        MyUser userInfo = BmobUser.getCurrentUser(MyUser.class);
+        mUsernameView.setText(userInfo.getUsername());
+//        mEmailView.setText(userInfo.getEmail());
+//        mPhoneView.setText(userInfo.getMobilePhoneNumber());
+        ///云端初始化
+        query = new BmobQuery<>();
 
-        mPasswordView = (EditText) findViewById(R.id.r_password);
+        user=new User();
+        successbar=Snackbar.make(mUsernameView,getResources().getString(R.string.Edit_Success), Snackbar.LENGTH_LONG)
+                .setAction("Action", null);
+        failbar=Snackbar.make(mUsernameView,getResources().getString(R.string.Edit_Failed), Snackbar.LENGTH_LONG)
+                .setAction("Action", null);
+
+        mAgeView = (EditText) findViewById(R.id.edit_age);
+        mPasswordView = (EditText) findViewById(R.id.edit_password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -96,22 +118,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             }
         });
 
-        successbar=Snackbar.make(mUsernameView,getResources().getString(R.string.Register_success), Snackbar.LENGTH_LONG)
-                .setAction("Action", null);
-        failbar=Snackbar.make(mUsernameView,getResources().getString(R.string.Register_failed), Snackbar.LENGTH_LONG)
-                .setAction("Action", null);
-
-        //选择器
-        WheelPicker wheelCenter = (WheelPicker) findViewById(R.id.r_wheel_center);
-        wheelCenter.setOnItemSelectedListener(this);
-        List<String> data = new ArrayList<>();
-        data.add(getResources().getString(R.string.wheel_user));
-        data.add(getResources().getString(R.string.wheel_business));
-        data.add(getResources().getString(R.string.wheel_admin));
-        wheelCenter.setData(data);
-
-
-        Button mEmailSignInButton = (Button) findViewById(R.id.r_register_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.edit_info_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,8 +126,8 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             }
         });
 
-        mLoginFormView = findViewById(R.id.r_login_form);
-        mProgressView = findViewById(R.id.r_login_progress);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
     }
 
     private void populateAutoComplete() {
@@ -153,33 +160,6 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         return false;
     }
 
-
-    //选择器
-    @Override
-    public void onItemSelected(WheelPicker picker, Object data, int position) {
-        String text = "";
-//        switch (picker.getId()) {
-//            case R.id.main_wheel_center:
-//                text = "Center:";
-//                break;
-//        }
-        switch (position)
-        {
-            case 1://用户
-                usertype="user";
-                break;
-            case 2://商人
-                usertype="business";
-                break;
-            case 3://管理员（公司）
-                usertype="admin";
-                break;
-            default:
-                break;
-        }
-        Snackbar.make(mProgressView, getResources().getString(R.string.Login_snackbar_send)+String.valueOf(data), Snackbar.LENGTH_SHORT)
-                .setAction("Action", null).show();
-    }
     /**
      * Callback received when a permissions request has been completed.
      */
@@ -207,12 +187,10 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         // Reset errors.
         mUsernameView.setError(null);
         mPasswordView.setError(null);
-        mEmailView.setError(null);
 
         // Store values at the time of the login attempt.
-        String username = mUsernameView.getText().toString();
+        String email = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
-        String memail = mEmailView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -224,14 +202,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             cancel = true;
         }
 
-        // Check for a valid username address.
-        if (TextUtils.isEmpty(username)) {
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
             mUsernameView.setError(getString(R.string.error_field_required));
             focusView = mUsernameView;
             cancel = true;
-        } else if (!isEmailValid(memail)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!isEmailValid(email)) {
+            mUsernameView.setError(getString(R.string.error_invalid_email));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -243,14 +221,14 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(username, password);
+            mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
     }
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return true;
     }
 
     private boolean isPasswordValid(String password) {
@@ -331,7 +309,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(RegisterActivity.this,
+                new ArrayAdapter<>(EditInfoActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mUsernameView.setAdapter(adapter);
@@ -354,11 +332,12 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private String mUsername="null";
-        private String mPassword="null";
+        private final String mUsername;
+        private final String mPassword;
+        private String tPassword="";
 
-        UserLoginTask(String username, String password) {
-            mUsername = username;
+        UserLoginTask(String email, String password) {
+            mUsername = email;
             mPassword = password;
         }
 
@@ -390,32 +369,77 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
-                MyUser user = new MyUser();
-                user.setUsername(mUsername);
-                user.setPassword(mPassword);
-                user.setUsertype(usertype);
-                user.setEmail(mEmailView.getText().toString());
-                user.signUp(new SaveListener<MyUser>() {
-                    @Override
-                    public void done(MyUser s, BmobException e) {
-                        if(e==null){
-                            //成功注册
-                            successbar.show();
-                            finish();
-                        }else
-                        {
-                            //注册失败
-                            failbar.show();
-                            mPasswordView.requestFocus();
-                        }
-                    }
-                });
-
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+            MyUser newUser = BmobUser.getCurrentUser(MyUser.class);
+            newUser.setUsername(mUsername);
+            if(!mPassword.equals("")){
+                newUser.setPassword(mPassword);
             }
+            if(!mAgeView.getText().toString().equals("")) {
+                newUser.setAge(Integer.parseInt(mAgeView.getText().toString()));
+            }
+//            if(head.get)
+//            newUser.setNick("");
+            if(!mEmailView.getText().toString().equals("")) {
+                newUser.setEmail(mEmailView.getText().toString());
+            }
+            if(!mPhoneView.getText().toString().equals("")) {
+                newUser.setMobilePhoneNumber(mPhoneView.getText().toString());
+            }
+            BmobUser bmobUser = BmobUser.getCurrentUser(MyUser.class);
+            newUser.update(bmobUser.getObjectId(),new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    if(e==null){
+//                        toast("更新用户信息成功");
+                        successbar.show();
+                    }else{
+//                        toast("更新用户信息失败:" + e.getMessage());
+                        failbar.show();
+                    }
+                }
+            });
+//            query.setLimit(1).addWhereEqualTo("username",sharedPreferences.getString("username",""))
+//                    .findObjects(new FindListener<User>() {
+//                        @Override
+//                        public void done(List<User> object, BmobException e) {
+//                            if (e == null) {
+//                                System.out.println(""+tPassword);
+//                                // 找得到
+//                                for (User user : object) {
+//                                    tPassword=user.getPassword();
+//                                }
+////                                System.out.println("数据库："+tPassword+"///输入："+mPassword);
+//                                if (success) {
+//                                    user.setUsername(mUsername);
+//                                    user.setPassword(mPassword);
+//                                    user.setUsertype(usertype);
+//                                    user.update(new UpdateListener() {
+//                                        @Override
+//                                        public void done(BmobException e) {
+//                                            if(e==null)
+//                                            {
+//                                                //成功注册
+//                                                finish();
+//                                            }else
+//                                            {
+//                                                //注册失败
+//                                                mPasswordView.requestFocus();
+//                                            }
+//
+//                                        }
+//                                    });
+//                                }
+//                                else
+//                                {
+//                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                                    mPasswordView.requestFocus();
+//                                }
+//                            } else {
+//                                // 找不到
+//                                System.out.println("找不到"+tPassword);
+//                            }
+//                        }
+//                    });
         }
 
         @Override

@@ -2,6 +2,7 @@ package com.codinggarfield.cooking.cooking;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codinggarfield.cooking.cooking.dummy.DummyContent;
@@ -37,7 +39,12 @@ public class MainActivity extends AppCompatActivity
 
     private BannerComponent bannerComponent;
     private boolean mTwoPane;
-    
+    private RelativeLayout  infoRL;
+    private TextView username;
+    private SharedPreferences sharedPreferences;
+    private Intent editInfo, settingIntent;
+    private SharedPreferences.Editor Ed;
+    private String usernamest="UserName";;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +52,21 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        
+
+
+        sharedPreferences=getSharedPreferences("login", Context.MODE_PRIVATE);
+        Ed=sharedPreferences.edit();
+        usernamest=sharedPreferences.getString("username","");
+
+
+
+        //Intent
+        settingIntent =new Intent(MainActivity.this,SettingsActivity.class);
+        editInfo=new Intent(MainActivity.this,EditInfoActivity.class);
+
+
+
+
         //list
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
@@ -66,10 +87,23 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        username=(TextView)view.findViewById(R.id.username);
+        username.setText(usernamest);
+        infoRL=(RelativeLayout)view.findViewById(R.id.info_RelativeLayout);
+        infoRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //更新个人信息
+                startActivity(editInfo);
+            }
+        });
 
 
+        //轮播图
         ViewPager viewPager = (ViewPager) findViewById(R.id.banner_viewPager);
         Indicator indicator = (Indicator) findViewById(R.id.banner_indicator);
         indicator.setScrollBar(new ColorBar(getApplicationContext(), Color.parseColor("#80ffffff"), 0, ScrollBar.Gravity.CENTENT_BACKGROUND));
@@ -162,6 +196,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -185,6 +221,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(settingIntent);
             return true;
         }
 
@@ -199,12 +236,13 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_main) {
             // Handle the camera action
+
         } else if (id == R.id.nav_order) {
 
         } else if (id == R.id.nav_myinfo) {
-
-        } else if (id == R.id.nav_setting) {
-
+            startActivity(editInfo);
+        } else if (id == R.id.nav_exit) {
+            this.finish();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

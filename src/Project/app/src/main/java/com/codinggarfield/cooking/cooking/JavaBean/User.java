@@ -13,6 +13,15 @@ public class User extends BmobObject {
     private String phone;
     private String age;
     private String love;
+    private String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getUsertype() {
         return usertype;

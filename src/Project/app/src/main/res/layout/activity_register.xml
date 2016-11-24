@@ -52,7 +52,7 @@
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:weightSum="1"
-                        android:layout_height="120dp">
+                        android:layout_height="180dp">
 
                         <LinearLayout
                             android:orientation="vertical"
@@ -65,7 +65,7 @@
                                 android:layout_height="wrap_content">
 
                                 <AutoCompleteTextView
-                                    android:id="@+id/r_email"
+                                    android:id="@+id/r_username"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/prompt_email"
@@ -79,7 +79,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
 
-                                <EditText
+                                <AutoCompleteTextView
                                     android:id="@+id/r_password"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -90,6 +90,21 @@
                                     android:inputType="textPassword"
                                     android:maxLines="1"
                                     android:singleLine="true"  />
+
+                            </android.support.design.widget.TextInputLayout>
+
+                            <android.support.design.widget.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/r_email"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/prompt_email"
+                                    android:inputType="textEmailAddress"
+                                    android:maxLines="1"
+                                    android:singleLine="true"/>
 
                             </android.support.design.widget.TextInputLayout>
                         </LinearLayout>

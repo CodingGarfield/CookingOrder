@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -29,14 +31,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.aigestudio.wheelpicker.WheelPicker;
+import com.codinggarfield.cooking.cooking.JavaBean.MyUser;
 import com.codinggarfield.cooking.cooking.JavaBean.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -50,6 +54,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor Ed;
 
     BmobQuery<User> query;
     /**
@@ -78,22 +84,53 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.email);
+        mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
         populateAutoComplete();
 
+        //
+//        sharedPreferences
+        sharedPreferences=getSharedPreferences("login", Context.MODE_PRIVATE);
+        Ed=sharedPreferences.edit();
+
+
+
+
+        ///云端初始化
         query = new BmobQuery<>();
 
         //User表
-        user=new User();
+//        user=new User();
 
         //选择器
         WheelPicker wheelCenter = (WheelPicker) findViewById(R.id.main_wheel_center);
         wheelCenter.setOnItemSelectedListener(this);
         List<String> data = new ArrayList<>();
-        data.add("用户");
-        data.add("商家");
-        data.add("管理员(公司)");
+        data.add(getResources().getString(R.string.wheel_user));
+        data.add(getResources().getString(R.string.wheel_business));
+        data.add(getResources().getString(R.string.wheel_admin));
         wheelCenter.setData(data);
+        //判断自动登录
+        MyUser user1 = BmobUser.getCurrentUser(MyUser.class);
+        if(user1 != null){
+            // 允许用户使用应用
+                if("user".equals(user1.getUsertype()))
+                {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                }
+                else if ("business".equals(user1.getUsertype()))
+                {
+                }
+                else if ("admin".equals(user1.getUsertype()))
+                {
+                    startActivity(new Intent(LoginActivity.this, ChartsActivity.class));
+                    finish();
+                }
+        }else{
+            //缓存用户对象为空时， 可打开用户注册界面…
+
+        }
+
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -182,22 +219,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         switch (position)
         {
             case 1://用户
-
                 usertype="user";
                 break;
             case 2://商人
-
                 usertype="business";
                 break;
             case 3://管理员（公司）
-
                 usertype="admin";
                 break;
             default:
                 break;
         }
 //        Toast.makeText(this, text + String.valueOf(data), Toast.LENGTH_SHORT).show();
-        Snackbar.make(mProgressView, "切换至"+String.valueOf(data), Snackbar.LENGTH_SHORT)
+        Snackbar.make(mProgressView, getResources().getString(R.string.Login_snackbar_send)+String.valueOf(data), Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
     }
 
@@ -400,52 +434,113 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            ///云端数据库查询
-            query.setLimit(1).addWhereEqualTo("username",mUsername)
-                    .findObjects(new FindListener<User>() {
-                        @Override
-                        public void done(List<User> object, BmobException e) {
-                            if (e == null) {
-                                System.out.println(""+tPassword);
-                                // 找得到
-                                for (User user : object) {
-                                    tPassword=user.getPassword();
-                                    tusertype=user.getUsertype();
-                                }
-//                                System.out.println("数据库："+tPassword+"///输入："+mPassword);
-                                if (success) {
+            MyUser user=new MyUser();
+            user.setUsername(mUsername);
+            user.setPassword(mPassword);
+            user.setUsertype(usertype);
+            user.login(new SaveListener<BmobUser>() {
 
-                                    if(tPassword.equals(mPassword)) {
-                                        if(tusertype.equals("user")) {
-                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                            finish();
-                                        }
-                                        else if(tusertype.equals("business"))
-                                        {
-
-                                        }
-                                        else if(tusertype.equals("admin"))
-                                        {
-                                            startActivity(new Intent(LoginActivity.this, ChartsActivity.class));
-                                            finish();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        System.out.println("//正确密码是"+tPassword);
-                                    }
-                                } else {
-                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-                                    mPasswordView.requestFocus();
-                                }
-                            } else {
-                                // 找不到
-                                System.out.println("找不到"+tPassword);
-                                mUsernameView.setError(getString(R.string.error_invalid_username));
-                                mUsernameView.requestFocus();
-                            }
+                @Override
+                public void done(BmobUser bmobUser, BmobException e) {
+                    if(e==null){
+                        //通过BmobUser user = BmobUser.getCurrentUser()获取登录成功后的本地用户信息
+                        //如果是自定义用户对象MyUser，可通过MyUser user = BmobUser.getCurrentUser(MyUser.class)获取自定义用户信息
+                        MyUser user1 = BmobUser.getCurrentUser(MyUser.class);
+                        if((user1.getUsertype()).equals(usertype)) {
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
                         }
-                    });
+                        else if((user1.getUsertype()).equals(usertype))
+                        {
+
+                        }
+                        else if((user1.getUsertype()).equals(usertype))
+                        {
+                            startActivity(new Intent(LoginActivity.this, ChartsActivity.class));
+                            finish();
+                        }
+                        else
+                        {
+
+                        }
+//                        Ed.putString("username",mUsername);
+//                        Ed.putString("password",mPassword);
+//                        Ed.putString("usertype",usertype);
+//                        Ed.commit();
+                    }else{
+                    }
+                }
+            });
+
+//            ///云端数据库查询
+//            query.setLimit(1).addWhereEqualTo("username",mUsername)
+//                    .findObjects(new FindListener<User>() {
+//                        @Override
+//                        public void done(List<User> object, BmobException e) {
+//                            if (e == null) {
+//                                System.out.println(""+tPassword);
+//                                // 找得到
+//                                for (User user : object) {
+//                                    tPassword=user.getPassword();
+//                                    tusertype=user.getUsertype();
+//                                }
+////                                System.out.println("数据库："+tPassword+"///输入："+mPassword);
+//                                if (success) {
+//                                    if(tPassword.equals(mPassword)) {
+//                                        if(tusertype.equals(usertype)) {
+//                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//                                            finish();
+//                                        }
+//                                        else if(tusertype.equals(usertype))
+//                                        {
+//
+//                                        }
+//                                        else if(tusertype.equals(usertype))
+//                                        {
+//                                            startActivity(new Intent(LoginActivity.this, ChartsActivity.class));
+//                                            finish();
+//                                        }
+//                                        else
+//                                        {
+//
+//                                        }
+//                                        Ed.putString("username",mUsername);
+//                                        Ed.putString("password",mPassword);
+//                                        Ed.putString("usertype",usertype);
+//                                        Ed.commit();
+//
+//                                        //更新登录状态
+////                                        user.setState("online");
+////                                        user.update(new UpdateListener() {
+////
+////                                            @Override
+////                                            public void done(BmobException e) {
+////                                                if(e==null){
+////                                                    Log.i("bmob","更新成功");
+////                                                }else{
+////                                                    Log.i("bmob","更新失败："+e.getMessage()+","+e.getErrorCode());
+////                                                }
+////                                            }
+////                                        });
+//                                    }
+//                                    else
+//                                    {
+//                                        System.out.println("//正确密码是"+tPassword);
+//                                    }
+//                                }
+//                                else
+//                                {
+//                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                                    mPasswordView.requestFocus();
+//                                }
+//                            } else {
+//                                // 找不到
+//                                System.out.println("找不到"+tPassword);
+//                                mUsernameView.setError(getString(R.string.error_invalid_username));
+//                                mUsernameView.requestFocus();
+//                            }
+//                        }
+//                    });
         }
 
         @Override

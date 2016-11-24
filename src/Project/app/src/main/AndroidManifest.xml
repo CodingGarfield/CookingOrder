@@ -75,7 +75,6 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -84,26 +83,28 @@
         <activity
             android:name=".SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_splash"
-            android:theme="@style/FullscreenTheme"></activity>
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login">
+            android:theme="@style/FullscreenTheme" />
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".RegisterActivity" />
         <activity
-            android:name=".RegisterActivity"
-            android:label="@string/title_activity_register" />
+            android:name=".ItemDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".OrderActivity"
-            android:label="@string/title_activity_order"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ChartsActivity">
-        </activity>
+        <activity android:name=".ChartsActivity"></activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
+        <activity
+            android:name=".EditInfoActivity"
+            android:label="@string/title_activity_edit_info"></activity>
     </application>
 
 </manifest>
