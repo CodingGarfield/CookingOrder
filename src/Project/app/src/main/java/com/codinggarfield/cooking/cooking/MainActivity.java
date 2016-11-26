@@ -34,6 +34,8 @@ import com.shizhefei.view.indicator.slidebar.ScrollBar;
 
 import java.util.List;
 
+import cn.bmob.v3.BmobUser;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -242,6 +244,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_myinfo) {
             startActivity(editInfo);
         } else if (id == R.id.nav_exit) {
+            BmobUser.logOut();   //清除缓存用户对象
+            BmobUser currentUser = BmobUser.getCurrentUser(); // 现在的currentUser是null了
             this.finish();
         } else if (id == R.id.nav_share) {
 
