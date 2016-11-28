@@ -1,21 +1,22 @@
 package com.codinggarfield.cooking.cooking.JavaBean;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
 
 /**
  * Created by IAMWicker on 2016/11/25.
  */
 
 public class MyUser extends BmobUser {
-    private String nick;
+    private BmobFile nick;
     private String usertype;
     private Integer age;
 
-    public String getNick() {
+    public BmobFile getNick() {
         return nick;
     }
 
-    public void setNick(String nick) {
+    public void setNick(BmobFile nick) {
         this.nick = nick;
     }
 

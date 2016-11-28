@@ -97,14 +97,15 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".OrderActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ChartsActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ChartsActivity" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
         <activity
             android:name=".EditInfoActivity"
-            android:label="@string/title_activity_edit_info"></activity>
+            android:label="@string/title_activity_edit_info" />
+        <activity android:name=".PayActivity"></activity>
     </application>
 
 </manifest>

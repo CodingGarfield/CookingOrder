@@ -125,4 +125,8 @@
     <string name="r_email">Email</string>
     <string name="edit_phone">Phone</string>
     <string name="edit_age">Age</string>
+    <string name="Order_Actionbar">Your Order</string>
+    <string name="wechat_pay">WeChat Pay</string>
+    <string name="ALIPAY">ALIPAY</string>
+    <string name="PayText">Pay:</string>
 </resources>

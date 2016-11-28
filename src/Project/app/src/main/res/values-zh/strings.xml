@@ -52,4 +52,8 @@
     <string name="edit_phone">电话</string>
     <string name="r_email">邮箱</string>
     <string name="edit_age">年龄</string>
+    <string name="Order_Actionbar">已点菜单</string>
+    <string name="wechat_pay">微信支付</string>
+    <string name="ALIPAY">支付宝支付</string>
+    <string name="PayText">金额：</string>
 </resources>
