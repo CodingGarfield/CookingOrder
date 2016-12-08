@@ -49,7 +49,7 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     private static final int REQUEST_READ_CONTACTS = 0;
 
     //默认用户为普通用户
-    private String usertype="user";
+    String usertype="user";
 //    User user;
 
     /**
@@ -165,19 +165,19 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 //        }
         switch (position)
         {
-            case 1://用户
+            case 0://用户
                 usertype="user";
                 break;
-            case 2://商人
+            case 1://商人
                 usertype="business";
                 break;
-            case 3://管理员（公司）
+            case 2://管理员（公司）
                 usertype="admin";
                 break;
             default:
                 break;
         }
-        Snackbar.make(mProgressView, getResources().getString(R.string.Login_snackbar_send)+String.valueOf(data), Snackbar.LENGTH_SHORT)
+        Snackbar.make(mProgressView, getResources().getString(R.string.Login_snackbar_send)+String.valueOf(data)+"所选："+usertype, Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
     }
     /**

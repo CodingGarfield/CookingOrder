@@ -2,10 +2,13 @@ package com.codinggarfield.cooking.cooking;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobUser;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -30,6 +33,8 @@ public class ChartsActivity extends AppCompatActivity {
     private boolean hasLabelForSelected = false;
     private int dataType = DEFAULT_DATA;
 
+    Button exit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +49,16 @@ public class ChartsActivity extends AppCompatActivity {
         hasLabelForSelected = false;
         dataType = DEFAULT_DATA;
         chart.setValueSelectionEnabled(hasLabelForSelected);
+
+        exit=(Button)findViewById(R.id.charts_exit);
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BmobUser.logOut();   //清除缓存用户对象
+                BmobUser currentUser = BmobUser.getCurrentUser(); // 现在的currentUser是null了
+                finish();
+            }
+        });
 
 
         List<Column> columns = new ArrayList<Column>();

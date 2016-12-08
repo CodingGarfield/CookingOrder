@@ -1,6 +1,8 @@
 package com.codinggarfield.cooking.cooking;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -9,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.codinggarfield.cooking.cooking.JavaBean.UserBuy;
+import com.codinggarfield.cooking.cooking.dummy.DummyContent;
+
+import net.tsz.afinal.FinalBitmap;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 
 public class OrderActivity extends AppCompatActivity {
 
@@ -28,22 +41,35 @@ public class OrderActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    UserBuy userBuys;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
 
+    SharedPreferences sharedPreferences1;
+
+
+    TextView nowprice;
     public static View mainview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+        nowprice=(TextView)findViewById(R.id.nowPrice);
+
+        sharedPreferences1 = getSharedPreferences("nowcode", Context.MODE_PRIVATE);
+        int orderprice=1;
+        if (sharedPreferences1!=null)
+        orderprice = sharedPreferences1.getInt("orderprice", 0);
+
+        nowprice.setText(String.valueOf(orderprice));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle(R.string.Order_Actionbar);
+        toolbar.setTitle(getResources().getString(R.string.Order_Actionbar));
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -53,16 +79,21 @@ public class OrderActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         mainview=mViewPager;
+//        db = FinalDb.create(OrderActivity.this,"user_buy_table",true);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle Price=new Bundle();
-                Price.putString("price","1");
+                Price.putString("price",nowprice.getText().toString());
                 Intent payIntent=new Intent(OrderActivity.this,PayActivity.class);
                 payIntent.putExtras(Price);
                 startActivity(payIntent);
+                SharedPreferences.Editor editor=sharedPreferences1.edit();
+                editor.clear();
+                editor.commit();
 //                Snackbar.make(view, "已经加入豪华午餐", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
             }
@@ -102,7 +133,11 @@ public class OrderActivity extends AppCompatActivity {
          * The fragment argument representing the section number for this
          * fragment.
          */
+
+
+        UserBuy userBuys;
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private SharedPreferences sharedPreferences12;
 
         public PlaceholderFragment() {
         }
@@ -119,27 +154,42 @@ public class OrderActivity extends AppCompatActivity {
             return fragment;
         }
 
+        private FinalBitmap fb;
+        List<String> foodsUrl;
+
+        private DummyContent.DummyItem mItem1;
+
+        int oi1=1;
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_order, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             ImageView IV=(ImageView)rootView.findViewById(R.id.food);
-            switch (getArguments().getInt(ARG_SECTION_NUMBER))
-            {
-                case 1:
-                    IV.setImageResource(R.drawable.food1);
-                    break;
-                case 2:
-                    IV.setImageResource(R.drawable.food2);
-                    break;
-                case 3:
-                    IV.setImageResource(R.drawable.food3);
-                    break;
-                default:
-                    break;
-            }
-//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            String foodsUrl ="http://bmob-cdn-7882.b0.upaiyun.com/2016/12/02/b5f11a5b49d34b94b756617222a7ffbf.jpg";
+            //网络下载
+            fb = FinalBitmap.create(getActivity());//初始化FinalBitmap模块
+            fb.configLoadingImage(R.drawable.food1);
+
+            sharedPreferences12 = getActivity().getSharedPreferences("nowcode", Context.MODE_PRIVATE);
+            Set<String> foodlistUrlset=new LinkedHashSet();
+            foodlistUrlset=sharedPreferences12.getStringSet("foodlistUrlset",foodlistUrlset);
+                //获取网络图片
+            int oi=1;
+                for (String foodUrl : foodlistUrlset) {
+                    if (oi == getArguments().getInt(ARG_SECTION_NUMBER)) {
+//                        if(oi1<foodlistUrlset.size()) {
+                            Log.i("image", foodUrl);
+                            fb.display(IV, foodUrl);
+                            oi1++;
+                            System.out.println("oi:::::::::" + oi + ":::::::" + foodlistUrlset.size());
+//                        }
+//                        else
+//                        {
+//                        }
+                    }
+                    oi++;
+                }
             return rootView;
         }
     }
@@ -161,23 +211,16 @@ public class OrderActivity extends AppCompatActivity {
             return PlaceholderFragment.newInstance(position + 1);
         }
 
+
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
+            Set foodlistset = new LinkedHashSet();
+            sharedPreferences1 = getSharedPreferences("nowcode", Context.MODE_PRIVATE);
+            foodlistset=sharedPreferences1.getStringSet("foodlistset",foodlistset);
+            int count=3;
+            count=foodlistset.size();
+            return count;
         }
     }
 }

@@ -2,6 +2,7 @@ package com.codinggarfield.cooking.cooking;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
@@ -10,11 +11,15 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -34,6 +39,10 @@ import com.aigestudio.wheelpicker.WheelPicker;
 import com.codinggarfield.cooking.cooking.JavaBean.MyUser;
 import com.codinggarfield.cooking.cooking.JavaBean.User;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private SharedPreferences.Editor Ed;
 
     BmobQuery<User> query;
+
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -70,6 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private UserLoginTask mAuthTask = null;
 
+    Resources res;
     // UI references.
     private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
@@ -87,6 +98,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
         populateAutoComplete();
 
+        res= getResources();
         //
 //        sharedPreferences
         sharedPreferences=getSharedPreferences("login", Context.MODE_PRIVATE);
@@ -100,6 +112,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         //User表
 //        user=new User();
+        if(isFolderExists(Environment.getExternalStorageDirectory()+"/Cooking_Image/")) {
+            Bitmap bitmap= BitmapFactory.decodeResource(res, R.drawable.head);
+            try {
+                saveMyBitmap("head", bitmap);
+            } catch (NullPointerException e) {
+                System.out.println("获取空对象");
+            }
+        }
+        if(isFolderExists(Environment.getExternalStorageDirectory()+"/Cooking_Image_goods/")) {
+            Bitmap bitmap= BitmapFactory.decodeResource(res, R.drawable.food1);
+            try {
+                saveMyBitmap("head", bitmap);
+            } catch (NullPointerException e) {
+                System.out.println("获取空对象");
+            }
+        }
+
 
         //选择器
         WheelPicker wheelCenter = (WheelPicker) findViewById(R.id.main_wheel_center);
@@ -120,6 +149,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 else if ("business".equals(user1.getUsertype()))
                 {
+                    startActivity(new Intent(LoginActivity.this, EditgoodsActivity.class));
+                    finish();
                 }
                 else if ("admin".equals(user1.getUsertype()))
                 {
@@ -130,7 +161,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //缓存用户对象为空时， 可打开用户注册界面…
 
         }
-
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -162,7 +192,53 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
+    boolean isFolderExists(String strFolder)
+    {
+        File file = new File(strFolder);
 
+        File destDir = new File(strFolder);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
+        if (!file.exists())
+        {
+            if (file.mkdir())
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+        return true;
+    }
+    public void saveMyBitmap(String bitName,Bitmap mBitmap){
+
+        @SuppressLint("SdCardPath")
+        File f = new File(Environment.getExternalStorageDirectory()+"/Cooking_Image_goods/" + bitName + ".jpg");
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            // DebugMessage.put("在保存图片时出错："+e.toString());
+        }
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 90, fOut);
+        try {
+            fOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
@@ -218,13 +294,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //        }
         switch (position)
         {
-            case 1://用户
+            case 0://用户
                 usertype="user";
                 break;
-            case 2://商人
+            case 1://商人
                 usertype="business";
                 break;
-            case 3://管理员（公司）
+            case 2://管理员（公司）
                 usertype="admin";
                 break;
             default:
@@ -446,22 +522,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         //通过BmobUser user = BmobUser.getCurrentUser()获取登录成功后的本地用户信息
                         //如果是自定义用户对象MyUser，可通过MyUser user = BmobUser.getCurrentUser(MyUser.class)获取自定义用户信息
                         MyUser user1 = BmobUser.getCurrentUser(MyUser.class);
-                        if((user1.getUsertype()).equals(usertype)) {
+                        if((user1.getUsertype()).equals(usertype)&&usertype.equals("user")) {
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         }
-                        else if((user1.getUsertype()).equals(usertype))
+                        else if((user1.getUsertype()).equals(usertype)&&usertype.equals("business"))
                         {
-
+                            startActivity(new Intent(LoginActivity.this, EditgoodsActivity.class));
+                            finish();
                         }
-                        else if((user1.getUsertype()).equals(usertype))
+                        else if((user1.getUsertype()).equals(usertype)&&usertype.equals("admin"))
                         {
                             startActivity(new Intent(LoginActivity.this, ChartsActivity.class));
                             finish();
                         }
                         else
                         {
-
                         }
 //                        Ed.putString("username",mUsername);
 //                        Ed.putString("password",mPassword);

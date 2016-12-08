@@ -40,7 +40,7 @@
     <string name="Login_snackbar_send">切换至</string>
     <string name="Register_success">注册成功</string>
     <string name="Register_failed">注册失败</string>
-    <string name="prompt_email">用户名</string>
+    <string name="prompt_email">邮箱</string>
     <string name="prompt_password">密码</string>
     <string name="pref_header_notifications">提醒</string>
     <string name="pref_header_data_sync">同步</string>
@@ -56,4 +56,18 @@
     <string name="wechat_pay">微信支付</string>
     <string name="ALIPAY">支付宝支付</string>
     <string name="PayText">金额：</string>
+    <string name="Edit_good_savebtn">保存商品</string>
+    <string name="Edit_good_name">商品名称</string>
+    <string name="Edit_good_price">商品价格</string>
+    <string name="Edit_good_introduction">商品介绍</string>
+    <string name="Edit_good_surplus">商品余量</string>
+    <string name="prompt_username">用户名</string>
+    <string name="loginout">登出</string>
+    <string name="goodprice">商品价格</string>
+    <string name="goodaddress">商家地址</string>
+    <string name="clicktoorder">点击按钮下单</string>
+    <string name="AddOrder">添加到购物车</string>
+    <string name="successorder">订餐成功</string>
+    <string name="failorder">订餐失败</string>
+    <string name="nowprice">当前订单价格</string>
 </resources>

@@ -3,6 +3,8 @@
     package="com.codinggarfield.cooking.cooking">
     2
 
+    <!--保持CPU 运转，屏幕和键盘灯有可能是关闭的,用于文件上传和下载 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- 允许联网 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- 获取GSM（2g）、WCDMA（联通3g）等网络状态的信息 -->
@@ -105,7 +107,8 @@
         <activity
             android:name=".EditInfoActivity"
             android:label="@string/title_activity_edit_info" />
-        <activity android:name=".PayActivity"></activity>
+        <activity android:name=".PayActivity" />
+        <activity android:name=".EditgoodsActivity"></activity>
     </application>
 
 </manifest>

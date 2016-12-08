@@ -12,7 +12,7 @@
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Username</string>
+    <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign In</string>
     <string name="action_register">Register</string>
@@ -129,4 +129,18 @@
     <string name="wechat_pay">WeChat Pay</string>
     <string name="ALIPAY">ALIPAY</string>
     <string name="PayText">Pay:</string>
+    <string name="Edit_good_savebtn">Save Good</string>
+    <string name="Edit_good_name">Good Name</string>
+    <string name="Edit_good_price">Good Price</string>
+    <string name="Edit_good_introduction">Good Introduction</string>
+    <string name="Edit_good_surplus">Good Surplus</string>
+    <string name="prompt_username">Username</string>
+    <string name="loginout">Login Out</string>
+    <string name="goodprice">Good Price</string>
+    <string name="goodaddress">Address</string>
+    <string name="clicktoorder">Click Button To Order</string>
+    <string name="AddOrder">Add To Your Order</string>
+    <string name="successorder">Order Success</string>
+    <string name="failorder">Order Fail</string>
+    <string name="nowprice">Now Your Order Price</string>
 </resources>

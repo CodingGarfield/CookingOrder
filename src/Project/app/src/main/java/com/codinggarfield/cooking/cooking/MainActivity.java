@@ -31,12 +31,16 @@ import com.shizhefei.view.indicator.IndicatorViewPager;
 import com.shizhefei.view.indicator.slidebar.ColorBar;
 import com.shizhefei.view.indicator.slidebar.ScrollBar;
 
+import net.tsz.afinal.FinalBitmap;
+
 import java.util.List;
 
 import cn.bmob.v3.BmobUser;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+
 
     private BannerComponent bannerComponent;
     private boolean mTwoPane;
@@ -45,7 +49,8 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences sharedPreferences;
     private Intent editInfo, settingIntent;
     private SharedPreferences.Editor Ed;
-    private String usernamest="UserName";;
+    private String usernamest="UserName";
+    private FinalBitmap fb;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +59,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         sharedPreferences=getSharedPreferences("login", Context.MODE_PRIVATE);
         Ed=sharedPreferences.edit();
         usernamest=sharedPreferences.getString("username","");
 
+
+        //网络下载
+        fb = FinalBitmap.create(this);//初始化FinalBitmap模块
+        fb.configLoadingImage(R.drawable.food1);
 
 
         //Intent
@@ -120,10 +128,11 @@ public class MainActivity extends AppCompatActivity
         bannerComponent.setAutoPlayTime(2500);
     }
 
-    public class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+
+    public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+
+        private List<DummyContent.DummyItem> mValues;
 
         public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
             mValues = items;
@@ -136,11 +145,16 @@ public class MainActivity extends AppCompatActivity
             return new ViewHolder(view);
         }
 
+
+
         @Override
         public void onBindViewHolder(final SimpleItemRecyclerViewAdapter.ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).id);
             holder.mContentView.setText(mValues.get(position).content);
+//            if(btpic!=null)
+//                holder.goodImageView.setImageBitmap(btpic);
+            fb.display(holder.goodImageView,mValues.get(position).goodimageUrl);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -157,12 +171,13 @@ public class MainActivity extends AppCompatActivity
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
                         context.startActivity(intent);
                     }
                 }
             });
         }
+
+
 
         @Override
         public int getItemCount() {
@@ -173,6 +188,7 @@ public class MainActivity extends AppCompatActivity
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
+            public final ImageView goodImageView;
             public DummyContent.DummyItem mItem;
 
             public ViewHolder(View view) {
@@ -180,6 +196,7 @@ public class MainActivity extends AppCompatActivity
                 mView = view;
                 mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
+                goodImageView=(ImageView)view.findViewById(R.id.listfood);
             }
 
             @Override
@@ -189,10 +206,22 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new MainActivity.SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+    static SimpleItemRecyclerViewAdapter madapter;
+
+    private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {
+        new Thread() {
+            @Override
+            public void run() {
+                madapter = new MainActivity.SimpleItemRecyclerViewAdapter(DummyContent.ITEMS);
+                recyclerView.setAdapter(madapter);
+            }
+        }.start();
     }
-    
+
+    public static void updata()
+    {
+        madapter.notifyDataSetChanged();
+    }
     
     
     @Override

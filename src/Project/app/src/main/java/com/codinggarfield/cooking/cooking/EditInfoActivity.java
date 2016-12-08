@@ -64,6 +64,7 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -430,6 +431,7 @@ public class EditInfoActivity extends AppCompatActivity implements LoaderCallbac
         int IS_PRIMARY = 1;
     }
 
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -444,6 +446,7 @@ public class EditInfoActivity extends AppCompatActivity implements LoaderCallbac
             mUsername = email;
             mPassword = password;
         }
+
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -473,7 +476,7 @@ public class EditInfoActivity extends AppCompatActivity implements LoaderCallbac
             mAuthTask = null;
             showProgress(false);
 
-            MyUser newUser = BmobUser.getCurrentUser(MyUser.class);
+            final MyUser newUser = BmobUser.getCurrentUser(MyUser.class);
             newUser.setUsername(mUsername);
             if(!mPassword.equals("")){
                 newUser.setPassword(mPassword);
@@ -482,7 +485,25 @@ public class EditInfoActivity extends AppCompatActivity implements LoaderCallbac
                 newUser.setAge(Integer.parseInt(mAgeView.getText().toString()));
             }
 
-            newUser.setNick(new BmobFile(new File(Environment.getExternalStorageDirectory()+"/Cooking_Image/" + getStringToday() + ".jpg")));
+            final BmobFile bmobFile = new BmobFile(new File(Environment.getExternalStorageDirectory()+"/Cooking_Image/" + getStringToday() + ".jpg"));
+            bmobFile.uploadblock(new UploadFileListener() {
+
+                @Override
+                public void done(BmobException e) {
+                    if(e==null){
+                        //bmobFile.getFileUrl()--返回的上传文件的完整地址
+                        newUser.setNickurl(bmobFile.getFileUrl());
+                    }
+                    else{
+
+                    }
+                }
+
+                @Override
+                public void onProgress(Integer value) {
+                    // 返回的上传进度（百分比）
+                }
+            });
 //            if(head.get)
 //            newUser.setNick("");
             if(!mEmailView.getText().toString().equals("")) {
@@ -504,48 +525,6 @@ public class EditInfoActivity extends AppCompatActivity implements LoaderCallbac
                     }
                 }
             });
-//            query.setLimit(1).addWhereEqualTo("username",sharedPreferences.getString("username",""))
-//                    .findObjects(new FindListener<User>() {
-//                        @Override
-//                        public void done(List<User> object, BmobException e) {
-//                            if (e == null) {
-//                                System.out.println(""+tPassword);
-//                                // 找得到
-//                                for (User user : object) {
-//                                    tPassword=user.getPassword();
-//                                }
-////                                System.out.println("数据库："+tPassword+"///输入："+mPassword);
-//                                if (success) {
-//                                    user.setUsername(mUsername);
-//                                    user.setPassword(mPassword);
-//                                    user.setUsertype(usertype);
-//                                    user.update(new UpdateListener() {
-//                                        @Override
-//                                        public void done(BmobException e) {
-//                                            if(e==null)
-//                                            {
-//                                                //成功注册
-//                                                finish();
-//                                            }else
-//                                            {
-//                                                //注册失败
-//                                                mPasswordView.requestFocus();
-//                                            }
-//
-//                                        }
-//                                    });
-//                                }
-//                                else
-//                                {
-//                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-//                                    mPasswordView.requestFocus();
-//                                }
-//                            } else {
-//                                // 找不到
-//                                System.out.println("找不到"+tPassword);
-//                            }
-//                        }
-//                    });
         }
 
         @Override
