@@ -70,4 +70,10 @@
     <string name="successorder">订餐成功</string>
     <string name="failorder">订餐失败</string>
     <string name="nowprice">当前订单价格</string>
+    <string name="Edit_good_bussiness">修改商家信息</string>
+    <string name="editb_name">商店名</string>
+    <string name="editb_local">地址</string>
+    <string name="editb_phone">电话</string>
+    <string name="editb_save_btn">保存</string>
+    <string name="nav_find_bussiness">查找商店信息</string>
 </resources>

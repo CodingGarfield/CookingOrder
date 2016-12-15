@@ -51,7 +51,7 @@ public class EditgoodsActivity extends AppCompatActivity implements View.OnClick
 
     EditText upgoodname,upgoodprice,upgoodintroduction,upgoodsurplus;
     ImageView upgoodImage;
-    Button savegood,exit;
+    Button savegood,exit,editBussiness;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +63,13 @@ public class EditgoodsActivity extends AppCompatActivity implements View.OnClick
         upgoodImage=(ImageView) findViewById(R.id.upgoodimage);
         savegood=(Button)findViewById(R.id.savegood_button);
         exit=(Button)findViewById(R.id.edit_exit_button);
+        editBussiness=(Button)findViewById(R.id.bussiness_button);
+        editBussiness.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+            }
+        });
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

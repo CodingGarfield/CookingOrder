@@ -109,6 +109,7 @@
     <string name="nav_exit">Exit</string>
     <string name="nav_menu_more">More</string>
     <string name="nav_share">Share To Your Friend</string>
+
     <string name="nav_send">Send You Reports</string>
     <string name="wheel_user">User</string>
     <string name="wheel_business">Business</string>
@@ -143,4 +144,10 @@
     <string name="successorder">Order Success</string>
     <string name="failorder">Order Fail</string>
     <string name="nowprice">Now Your Order Price</string>
+    <string name="Edit_good_bussiness">Edit Bussiness</string>
+    <string name="editb_name">Name</string>
+    <string name="editb_local">Address</string>
+    <string name="editb_phone">Phone</string>
+    <string name="editb_save_btn">Save</string>
+    <string name="nav_find_bussiness">Search Bussiness</string>
 </resources>

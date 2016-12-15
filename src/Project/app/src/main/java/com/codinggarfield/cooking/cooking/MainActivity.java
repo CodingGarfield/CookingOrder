@@ -1,6 +1,7 @@
 package com.codinggarfield.cooking.cooking;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -20,10 +21,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.codinggarfield.cooking.cooking.JavaBean.bussiness;
 import com.codinggarfield.cooking.cooking.dummy.DummyContent;
 import com.shizhefei.view.indicator.BannerComponent;
 import com.shizhefei.view.indicator.Indicator;
@@ -35,7 +38,10 @@ import net.tsz.afinal.FinalBitmap;
 
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -51,7 +57,8 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences.Editor Ed;
     private String usernamest="UserName";
     private FinalBitmap fb;
-    
+    android.support.v7.app.AlertDialog.Builder builder,find;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +80,44 @@ public class MainActivity extends AppCompatActivity
         settingIntent =new Intent(MainActivity.this,SettingsActivity.class);
         editInfo=new Intent(MainActivity.this,EditInfoActivity.class);
 
+        final EditText inputServer = new EditText(this);
+        builder = new android.support.v7.app.AlertDialog.Builder(this);
+        find = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setView(inputServer);
+        builder.setTitle("搜索商家");
+        builder.setMessage("请在输入框输入商家名");
+        builder.setNegativeButton("取消", null);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(!"".equals(inputServer.getText().toString()))
+                {
+
+                    BmobQuery<bussiness> query = new BmobQuery<bussiness>();
+                    query.addWhereEqualTo("name",inputServer.getText().toString());
+                    query.findObjects(new FindListener<bussiness>() {
+                        @Override
+                        public void done(List<bussiness> list, BmobException e) {
+                            if (e==null)
+                            {
+                                for (bussiness bussin : list) {
+                                    find.setMessage("查找商家" + inputServer.getText().toString() + "的结果\n"
+                                            + "\n店址："+bussin.getLocal()
+                                            + "\n电话："+bussin.getPhone());
+                                    find.show();
+                                }
+                            }
+                            else
+                            {
+                                find.setMessage("找不到数据");
+                                find.show();
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
 
 
 
@@ -259,6 +304,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -280,12 +326,16 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.nav_search) {
+            builder.show();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
+
     @Override
     protected void onStart() {
         super.onStart();

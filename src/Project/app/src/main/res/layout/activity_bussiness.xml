@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_editgoods"
+    android:id="@+id/activity_bussiness"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.codinggarfield.cooking.cooking.EditgoodsActivity">
+    tools:context="com.codinggarfield.cooking.cooking.BussinessActivity">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -21,84 +20,60 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="300dp">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                app:srcCompat="@drawable/food1"
-                android:id="@+id/upgoodimage"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-
-                android:hint="@string/Edit_good_name"
+                android:hint="@string/editb_name"
                 android:ems="10"
-                android:id="@+id/upgoodname" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:hint="@string/Edit_good_price"
-                android:ems="10"
-                android:id="@+id/upgoodprice" />
+                android:id="@+id/upbname" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:hint="@string/Edit_good_introduction"
+                android:hint="@string/editb_local"
                 android:ems="10"
-                android:id="@+id/upgoodintroduction" />
+                android:id="@+id/upblocal" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="@string/editb_phone"
+                android:ems="10"
+                android:id="@+id/upbphone" />
 
             <!--<EditText-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:inputType="textPersonName"-->
-                <!--android:hint="@string/Edit_good_surplus"-->
-                <!--android:ems="10"-->
-                <!--android:id="@+id/upgoodsurplus" />-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:inputType="textPersonName"-->
+            <!--android:hint="@string/Edit_good_surplus"-->
+            <!--android:ems="10"-->
+            <!--android:id="@+id/upgoodsurplus" />-->
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="phone"
-                android:hint="@string/Edit_good_surplus"
-                android:ems="10"
-                android:id="@+id/upgoodsurplus" />
+
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="100dp">
+
 
                 <Button
-                    android:id="@+id/bussiness_button"
+                    android:id="@+id/savenbussiness_button"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginTop="16dp"
-                    android:text="@string/Edit_good_bussiness"
-                    android:textStyle="bold"
-                    android:layout_weight="0.7" />
-                <Button
-                    android:id="@+id/savegood_button"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/Edit_good_savebtn"
+                    android:text="@string/editb_save_btn"
                     android:textStyle="bold"
                     android:layout_weight="1" />
 
                 <Button
-                    android:id="@+id/edit_exit_button"
+                    android:id="@+id/editb_exit_button"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -111,5 +86,4 @@
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
-
 </RelativeLayout>
