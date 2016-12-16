@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences=getSharedPreferences("login", Context.MODE_PRIVATE);
         Ed=sharedPreferences.edit();
         usernamest=sharedPreferences.getString("username","");
+        BmobUser bmobUser = BmobUser.getCurrentUser();
+        usernamest=bmobUser.getUsername();
 
 
         //网络下载
@@ -79,46 +81,6 @@ public class MainActivity extends AppCompatActivity
         //Intent
         settingIntent =new Intent(MainActivity.this,SettingsActivity.class);
         editInfo=new Intent(MainActivity.this,EditInfoActivity.class);
-
-        final EditText inputServer = new EditText(this);
-        builder = new android.support.v7.app.AlertDialog.Builder(this);
-        find = new android.support.v7.app.AlertDialog.Builder(this);
-        builder.setView(inputServer);
-        builder.setTitle("搜索商家");
-        builder.setMessage("请在输入框输入商家名");
-        builder.setNegativeButton("取消", null);
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if(!"".equals(inputServer.getText().toString()))
-                {
-
-                    BmobQuery<bussiness> query = new BmobQuery<bussiness>();
-                    query.addWhereEqualTo("name",inputServer.getText().toString());
-                    query.findObjects(new FindListener<bussiness>() {
-                        @Override
-                        public void done(List<bussiness> list, BmobException e) {
-                            if (e==null)
-                            {
-                                for (bussiness bussin : list) {
-                                    find.setMessage("查找商家" + inputServer.getText().toString() + "的结果\n"
-                                            + "\n店址："+bussin.getLocal()
-                                            + "\n电话："+bussin.getPhone());
-                                    find.show();
-                                }
-                            }
-                            else
-                            {
-                                find.setMessage("找不到数据");
-                                find.show();
-                            }
-                        }
-                    });
-
-                }
-            }
-        });
-
 
 
         //list
@@ -146,6 +108,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        ImageView head=(ImageView)view.findViewById(R.id.headView);
+        head.setImageResource(R.drawable.head);
         username=(TextView)view.findViewById(R.id.username);
         username.setText(usernamest);
         infoRL=(RelativeLayout)view.findViewById(R.id.info_RelativeLayout);
@@ -327,6 +291,44 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         } else if (id == R.id.nav_search) {
+            final EditText inputServer = new EditText(this);
+            builder = new android.support.v7.app.AlertDialog.Builder(this);
+            find = new android.support.v7.app.AlertDialog.Builder(this);
+            builder.setView(inputServer);
+            builder.setTitle("搜索商家");
+            builder.setMessage("请在输入框输入商家名");
+            builder.setNegativeButton("取消", null);
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if(!"".equals(inputServer.getText().toString()))
+                    {
+
+                        BmobQuery<bussiness> query = new BmobQuery<bussiness>();
+                        query.addWhereEqualTo("name",inputServer.getText().toString());
+                        query.findObjects(new FindListener<bussiness>() {
+                            @Override
+                            public void done(List<bussiness> list, BmobException e) {
+                                if (e==null)
+                                {
+                                    for (bussiness bussin : list) {
+                                        find.setMessage("查找商家" + inputServer.getText().toString() + "的结果\n"
+                                                + "\n店址："+bussin.getLocal()
+                                                + "\n电话："+bussin.getPhone());
+                                        find.show();
+                                    }
+                                }
+                                else
+                                {
+                                    find.setMessage("找不到数据");
+                                    find.show();
+                                }
+                            }
+                        });
+
+                    }
+                }
+            });
             builder.show();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
